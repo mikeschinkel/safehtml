@@ -9,12 +9,12 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"path/filepath"
 	"sync"
 	"text/template"
 	"text/template/parse"
 
-	"log"
 	"github.com/google/safehtml"
 	"github.com/google/safehtml/uncheckedconversions"
 )
