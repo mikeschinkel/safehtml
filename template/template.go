@@ -651,3 +651,34 @@ func parseGlob(t *Template, pattern string) (*Template, error) {
 func IsTrue(val interface{}) (truth, ok bool) {
 	return template.IsTrue(val)
 }
+
+// MakeTrustedStringSlice allows passed one or more string literals as variadic
+// parameters to convert into a slice of stringConstants.
+func MakeTrustedStringSlice(s ...stringConstant) []stringConstant {
+	return append([]stringConstant{}, s...)
+}
+
+func AddTrustedElementsAndAttributesForContext(attrType stringConstant, elements, attrs []stringConstant) {
+	var ctx sanitizationContext
+	var m map[string]sanitizationContext
+	var ok bool
+
+	switch attrType {
+	case "url":
+		ctx = sanitizationContextURL
+	case "identifier":
+		ctx = sanitizationContextIdentifier
+	default:
+		panic(fmt.Sprintf("Invalid attribute type for sanitation: %s", attrType))
+	}
+	for _, attr := range attrs {
+		sa := string(attr)
+		if m, ok = elementSpecificAttrValSanitizationContext[sa]; !ok {
+			m = make(map[string]sanitizationContext)
+		}
+		for _, ele := range elements {
+			m[string(ele)] = ctx
+		}
+		elementSpecificAttrValSanitizationContext[sa] = m
+	}
+}
