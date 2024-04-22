@@ -30,6 +30,10 @@ type HTML struct {
 	str string
 }
 
+func HTMLFromConstant(str stringConstant) HTML {
+	return HTML{str: string(str)}
+}
+
 // HTMLer is implemented by any value that has an HTML method, which defines the
 // safe HTML format for that value.
 type HTMLer interface {
