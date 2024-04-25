@@ -7,6 +7,7 @@
 package template
 
 import (
+	"encoding/json"
 	"fmt"
 	"text/template"
 
@@ -36,6 +37,7 @@ const (
 	sanitizationContextTrustedResourceURLOrURL
 	sanitizationContextURL
 	sanitizationContextURLSet
+	sanitizationContextJSON
 )
 
 // String returns the string representation of sanitizationContext s.
@@ -88,6 +90,7 @@ var sanitizationContextInfo = [...]struct {
 	sanitizationContextTrustedResourceURLOrURL: {"TrustedResourceURLOrURL", sanitizeTrustedResourceURLOrURLFuncName},
 	sanitizationContextURL:                     {"URL", sanitizeURLFuncName},
 	sanitizationContextURLSet:                  {"URLSet", sanitizeURLSetFuncName},
+	sanitizationContextJSON:                    {"JSON", sanitizeJSONFuncName},
 }
 
 var funcs = template.FuncMap{
@@ -99,6 +102,7 @@ var funcs = template.FuncMap{
 	sanitizeAsyncEnumFuncName:                      sanitizeAsyncEnum,
 	sanitizeDirEnumFuncName:                        sanitizeDirEnum,
 	sanitizeHTMLFuncName:                           sanitizeHTML,
+	sanitizeJSONFuncName:                           sanitizeJSON,
 	sanitizeHTMLValOnlyFuncName:                    sanitizeHTMLValOnly,
 	sanitizeIdentifierFuncName:                     sanitizeIdentifier,
 	sanitizeLoadingEnumFuncName:                    sanitizeLoadingEnum,
@@ -122,6 +126,7 @@ const (
 	sanitizeAsyncEnumFuncName                      = "_sanitizeAsyncEnum"
 	sanitizeDirEnumFuncName                        = "_sanitizeDirEnum"
 	sanitizeHTMLFuncName                           = "_sanitizeHTML"
+	sanitizeJSONFuncName                           = "_sanitizeJSON"
 	sanitizeHTMLValOnlyFuncName                    = "_sanitizeHTMLValOnly"
 	sanitizeIdentifierFuncName                     = "_sanitizeIdentifier"
 	sanitizeLoadingEnumFuncName                    = "_sanitizeLoadingEnum"
@@ -501,6 +506,29 @@ func sanitizeHTMLValOnly(args ...interface{}) (string, error) {
 		}
 	}
 	return "", fmt.Errorf(`expected a safehtml.HTML value`)
+}
+
+func sanitizeJSON(args ...interface{}) (string, error) {
+	var j []byte
+
+	if len(args) > 0 {
+		if safeTypeValue, ok := safehtmlutil.Indirect(args[0]).(safehtml.JSON); ok {
+			return safeTypeValue.String(), nil
+		}
+	}
+	input := safehtmlutil.Stringify(args...)
+	var x any
+	err := json.Unmarshal([]byte(input), &x)
+	if err != nil {
+		goto end
+	}
+	j, err = json.Marshal(x)
+	if err != nil {
+		goto end
+	}
+	input = string(j)
+end:
+	return safehtml.JSONEscaped(input).String(), nil
 }
 
 func sanitizeIdentifier(args ...interface{}) (string, error) {

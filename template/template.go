@@ -668,6 +668,8 @@ func AddTrustedElementsAndAttributesForContext(attrType stringConstant, elements
 		ctx = sanitizationContextURL
 	case "identifier":
 		ctx = sanitizationContextIdentifier
+	case "json":
+		ctx = sanitizationContextJSON
 	default:
 		panic(fmt.Sprintf("Invalid attribute type for sanitation: %s", attrType))
 	}
