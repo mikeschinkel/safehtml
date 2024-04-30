@@ -207,6 +207,10 @@ var elementSpecificAttrValSanitizationContext = map[string]map[string]sanitizati
 	"srcdoc": {
 		"iframe": sanitizationContextHTMLValOnly,
 	},
+	"srcset": {
+		"img":    sanitizationContextURLSet,
+		"source": sanitizationContextURLSet,
+	},
 }
 
 // globalAttrValSanitizationContext[x] is the sanitization context for attribute x when
@@ -318,7 +322,6 @@ var globalAttrValSanitizationContext = map[string]sanitizationContext{
 	"span":                  sanitizationContextNone,
 	"spellcheck":            sanitizationContextNone,
 	"src":                   sanitizationContextTrustedResourceURL,
-	"srcset":                sanitizationContextURLSet,
 	"start":                 sanitizationContextNone,
 	"step":                  sanitizationContextNone,
 	"style":                 sanitizationContextStyle,
