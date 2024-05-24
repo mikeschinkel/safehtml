@@ -62,6 +62,16 @@ func JSONEscaped(text string) JSON {
 	//return JSON{escapeAndCoerceToInterchangeValid(text)} <== copied from HTMLEscaped()
 }
 
+// EmptyObjectJSON returns an empty JSON object '{}' as safe JSON
+func EmptyObjectJSON() JSON {
+	return JSON{"{}"}
+}
+
+// EmptyArrayJSON returns an empty JSON array '[]' as safe JSON
+func EmptyArrayJSON() JSON {
+	return JSON{"[]"}
+}
+
 // JSONConcat returns an JSON which contains, in order, the string representations
 // of the given jsons.
 func JSONConcat(jsons ...JSON) JSON {
